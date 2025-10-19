@@ -3,7 +3,11 @@ import cors from 'cors';
 import { Firestore } from '@google-cloud/firestore';
 
 // Explicit project to avoid ambiguity
-const firestore = new Firestore({ projectId: 'storage-472007' });
+const firestore = new Firestore({
+  projectId: 'storage-472007',
+  databaseId: 'meetinggcalevents',   // <-- use this database
+});
+
 const COL = 'gcal_clickup_map';
 const SHARED_SECRET = process.env.SHARED_SECRET || '';
 
