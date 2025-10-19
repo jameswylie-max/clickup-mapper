@@ -43,8 +43,8 @@ app.put('/map/:eventId', async (req, res) => {
     await firestore.collection(COL).doc(req.params.eventId).set(payload, { merge: true });
     res.json({ eventId: req.params.eventId, ...payload });
   } catch (e) {
-    console.error('PUT /map error:', e);
-    res.status(500).json({ error: 'internal' });
+    console.error('PUT /map error:', e && e.stack ? e.stack : e);
+    res.status(500).json({ error: 'internal', detail: e?.message, code: e?.code });
   }
 });
 
