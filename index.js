@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { Firestore } from '@google-cloud/firestore';
 
+const firestore = new Firestore({ projectId: 'storage-472007' });
+
 const app = express();
 app.use(cors());
 app.use(express.json());
