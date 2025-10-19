@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { Firestore } from '@google-cloud/firestore';
 
-// Use the explicit project ID (hardening)
+// Explicit project to avoid ambiguity
 const firestore = new Firestore({ projectId: 'storage-472007' });
 const COL = 'gcal_clickup_map';
 const SHARED_SECRET = process.env.SHARED_SECRET || '';
@@ -39,4 +39,23 @@ app.put('/map/:eventId', async (req, res) => {
   try {
     const { taskId } = req.body || {};
     if (!taskId) return res.status(400).json({ error: 'taskId required' });
-    const payload = { taskId: String
+    const payload = { taskId: String(taskId), lastSynced: new Date().toISOString() };
+    await firestore.collection(COL).doc(req.params.eventId).set(payload, { merge: true });
+    res.json({ eventId: req.params.eventId, ...payload });
+  } catch (e) {
+    console.error('PUT /map error:', e);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+app.delete('/map/:eventId', async (req, res) => {
+  try {
+    await firestore.collection(COL).doc(req.params.eventId).delete();
+    res.status(204).end();
+  } catch (e) {
+    console.error('DELETE /map error:', e);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+export default app;
